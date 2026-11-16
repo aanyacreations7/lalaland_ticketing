@@ -9,6 +9,7 @@ declare(strict_types=1);
 function render_header(string $title, array $opt = []): void
 {
     $nav = $opt['nav'] ?? 'public';
+    start_session(); // before any output: pages below print CSRF fields
     $accent = accent_color();
     $user = in_array($nav, ['staff', 'admin'], true) ? current_user() : null;
     $eventName = setting('event_name');
@@ -35,19 +36,20 @@ function render_header(string $title, array $opt = []): void
 <meta name="theme-color" content="<?= e($accent) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet">
+<?= brand_fonts_css() ?>
 <link rel="stylesheet" href="/assets/style.css?v=<?= e(asset_version('style.css')) ?>">
 <style>:root{--accent:<?= e($accent) ?>}</style>
 <?= $opt['head'] ?? '' ?>
 </head>
 <body class="<?= e($opt['body_class'] ?? '') ?>">
-<?php if ($nav === 'public'): $logo = safe_url(setting('logo_url')); $main = safe_url((string) config('main_site_url')); ?>
+<?php if ($nav === 'public'): $logo = safe_url(setting('logo_url')) ?: brand_asset('wordmark-sm.webp'); $main = safe_url((string) config('main_site_url')); ?>
 <header class="site-header">
   <div class="wrap site-header-in">
     <a class="site-logo" href="<?= e($main ?: '/') ?>">
-      <?php if ($logo): ?><img src="<?= e($logo) ?>" alt="<?= e($eventName) ?>"><?php else: ?><span><?= e($eventName) ?></span><?php endif; ?>
+      <?php if ($logo): ?><img src="<?= e($logo) ?>" alt="<?= e($eventName) ?>" width="180" height="44"><?php else: ?><span><?= e($eventName) ?></span><?php endif; ?>
     </a>
-    <a class="header-cta" href="/#book">Tickets</a>
+    <a class="header-cta" href="/#book">Get tickets</a>
   </div>
 </header>
 <?php endif; ?>
@@ -79,13 +81,48 @@ function render_footer(array $opt = []): void
     ?>
 <?php if (($opt['nav'] ?? 'public') === 'public'): ?>
 <footer class="site-footer">
-  <span>© <?= date('Y') ?> <?= e((string) config('organiser_name')) ?></span>
-  <?php if ($main): ?><a href="<?= e($main) ?>">Back to website</a><?php endif; ?>
+  <div class="wrap site-footer-in">
+    <span>© <?= date('Y') ?> <?= e((string) config('organiser_name')) ?> · It’s always sunny in LaLa Land</span>
+    <?php if ($main): ?><a href="<?= e($main) ?>">Back to website →</a><?php endif; ?>
+  </div>
 </footer>
 <?php endif; ?>
 </body>
 </html>
 <?php
+}
+
+/** Public URL of a bundled brand image, or '' if it isn't there. */
+function brand_asset(string $file): string
+{
+    return is_file(ROOT_DIR . '/assets/brand/' . $file) ? '/assets/brand/' . $file . '?v=' . asset_version('brand/' . $file) : '';
+}
+
+/** A decorative brand sticker, or nothing when the file is missing. */
+function sticker(string $name, string $class = ''): string
+{
+    $src = brand_asset('s-' . $name . '.webp');
+    return $src ? '<img class="sticker ' . e($class) . '" src="' . e($src) . '" alt="" aria-hidden="true" loading="lazy" decoding="async">' : '';
+}
+
+/**
+ * @font-face rules for the licensed brand fonts, only when their files have
+ * been uploaded to assets/fonts (they are not in the public repository).
+ */
+function brand_fonts_css(): string
+{
+    $faces = [
+        ['Antique Olive Compact', 'antique-olive-compact.woff', 400],
+        ['Antique Olive', 'antique-olive.woff', 400],
+        ['Antique Olive', 'antique-olive-bold.woff', 700],
+    ];
+    $css = '';
+    foreach ($faces as [$family, $file, $weight]) {
+        if (is_file(ROOT_DIR . '/assets/fonts/' . $file)) {
+            $css .= "@font-face{font-family:'$family';src:url('/assets/fonts/$file') format('woff');font-weight:$weight;font-style:normal;font-display:swap}";
+        }
+    }
+    return $css ? "<style>$css</style>\n" : '';
 }
 
 function asset_version(string $file): string

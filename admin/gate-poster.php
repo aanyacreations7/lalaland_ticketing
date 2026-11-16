@@ -20,26 +20,35 @@ header('Content-Type: text/html; charset=utf-8');
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Gate poster · <?= e($s['event_name']) ?></title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+<?= brand_fonts_css() ?>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet">
 <style>
   @page { size: A4; margin: 0; }
-  .sp { font-family: Poppins, sans-serif; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: #ddd; font-family: Poppins, system-ui, sans-serif; color: #101010; }
-  .sheet { width: 210mm; height: 297mm; margin: 10mm auto; background: #fdfdf3; padding: 18mm 16mm; display: flex; flex-direction: column; align-items: center; text-align: center; border-top: 14mm solid <?= e($accent) ?>; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-weight: 600; font-size: 13pt; color: #555; margin: 0; }
-  h1 { font-family: 'Rubik Mono One', sans-serif; font-weight: 400; font-size: 34pt; line-height: 1.05; margin: 6mm 0 0; color: #8585ff; text-shadow: 2px 2px 0 #101010, -1px -1px 0 #101010, 1px -1px 0 #101010, -1px 1px 0 #101010; text-transform: uppercase; }
-  .logo { max-height: 26mm; margin-bottom: 4mm; }
-  .cta { font-family: 'Rubik Mono One', sans-serif; font-size: 40pt; line-height: 1.05; margin: 10mm 0 8mm; color: #ffd600; text-shadow: 3px 3px 0 #101010, -1.5px -1.5px 0 #101010, 1.5px -1.5px 0 #101010, -1.5px 1.5px 0 #101010; text-transform: uppercase; }
-  .qrbox { background: #fff; border: 2.5mm solid #101010; border-radius: 6mm; padding: 4mm; box-shadow: 3mm 3mm 0 <?= e($accent) ?>; }
-  .qr { display: block; width: 110mm; height: 110mm; image-rendering: pixelated; }
-  .steps { display: flex; gap: 8mm; margin-top: 8mm; font-size: 13pt; font-weight: 600; }
-  .steps span { display: inline-flex; align-items: center; gap: 3mm; }
-  .steps b { display: inline-grid; place-items: center; width: 9mm; height: 9mm; border-radius: 50%; background: <?= e($accent) ?>; color: #fff; font-size: 11pt; }
-  .price { margin-top: auto; font-size: 16pt; font-weight: 600; }
-  .url { font-size: 10pt; color: #777; margin-top: 2mm; word-break: break-all; }
-  .toolbar { text-align: center; margin: 16px; }
-  .toolbar button { font: 600 15px Poppins, sans-serif; padding: 12px 24px; border-radius: 999px; border: 0; background: #141414; color: #fff; cursor: pointer; }
+  :root { --ink:#1e1e1e; --sun:#ffd600; --cream:#fffacf; --accent:<?= e($accent) ?>; --marigold:#ffc01d; --peri:#8585ff;
+    --display:'Antique Olive Compact','Archivo Black',sans-serif; --body:'Antique Olive','Poppins',sans-serif; }
+  html, body { margin: 0; background: #ccc; font-family: var(--body); color: var(--ink); }
+  .sp { font-family: var(--body); }
+  .sheet { position: relative; overflow: hidden; width: 210mm; height: 297mm; margin: 10mm auto; background: var(--sun); padding: 14mm 14mm 12mm;
+    display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .wordmark { width: 150mm; height: auto; margin-top: 2mm; }
+  .tag { display: inline-block; font: 400 15pt/1 var(--display); text-transform: uppercase; color: #d8261e; background: var(--cream);
+    border: .7mm solid var(--ink); padding: 2.5mm 4mm 2mm; transform: rotate(-2deg); box-shadow: 1mm 1mm 0 var(--ink); margin-top: 3mm; }
+  .cta { font: 400 40pt/1 var(--display); text-transform: uppercase; color: var(--cream); margin: 7mm 0 6mm;
+    text-shadow: 1.2mm 1.2mm 0 var(--ink), -.5mm -.5mm 0 var(--ink), .5mm -.5mm 0 var(--ink), -.5mm .5mm 0 var(--ink), .5mm .5mm 0 var(--ink); }
+  .qrbox { background: #fff; border: 1mm solid var(--ink); border-radius: 6mm; padding: 4mm; box-shadow: 2.5mm 2.5mm 0 var(--ink); position: relative; z-index: 2; }
+  .qr { display: block; width: 100mm; height: 100mm; image-rendering: pixelated; }
+  .steps { display: flex; gap: 6mm; margin-top: 8mm; font-size: 13pt; font-weight: 800; }
+  .steps span { display: inline-flex; align-items: center; gap: 2.5mm; background: var(--cream); border: .6mm solid var(--ink); border-radius: 99mm; padding: 1.8mm 4mm 1.8mm 1.8mm; }
+  .steps b { display: inline-grid; place-items: center; width: 8mm; height: 8mm; border-radius: 50%; background: var(--accent); color: var(--cream); font-size: 11pt; }
+  .price { margin-top: auto; font: 400 22pt var(--display); text-transform: uppercase; }
+  .price small { display: block; font: 700 9pt var(--body); text-transform: none; margin-top: 1mm; word-break: break-all; }
+  .st { position: absolute; z-index: 1; height: auto; }
+  .st1 { width: 44mm; left: -7mm; bottom: -3mm; transform: rotate(-8deg); }
+  .st2 { width: 32mm; right: -6mm; top: 14mm; transform: rotate(10deg); }
+  .st3 { width: 26mm; right: 2mm; bottom: -2mm; transform: rotate(-6deg); }
+  .toolbar { text-align: center; margin: 16px; font-family: Poppins, sans-serif; }
+  .toolbar button { font: 700 15px Poppins, sans-serif; padding: 12px 24px; border-radius: 999px; border: 2px solid #1e1e1e; background: #ff502b; color: #fff; cursor: pointer; }
   @media print { html, body { background: #fff; } .sheet { margin: 0; } .toolbar { display: none; } }
 </style>
 </head>
@@ -49,16 +58,13 @@ header('Content-Type: text/html; charset=utf-8');
   <button onclick="window.print()">Print poster</button>
 </div>
 <div class="sheet">
-  <?php if ($logo = safe_url($s['logo_url'])): ?><img class="logo" src="<?= e($logo) ?>" alt=""><?php endif; ?>
-  <p class="eyebrow"><?= e(fmt_datetime($s['event_datetime'], 'l, j F')) ?></p>
-  <h1><?= display_text($s['event_name']) ?></h1>
+  <?php if ($wm = brand_asset('wordmark.webp')): ?><img class="wordmark" src="<?= e($wm) ?>" alt="LaLa Land"><?php else: ?><h1 class="cta"><?= display_text($s['event_name']) ?></h1><?php endif; ?>
+  <p class="tag"><?= e($s['event_name']) ?> · <?= e(fmt_datetime($s['event_datetime'], 'j M')) ?></p>
   <div class="cta"><?= display_text('Scan to buy tickets') ?></div>
   <div class="qrbox"><img class="qr" src="data:<?= e($qrMime) ?>;base64,<?= $qr ?>" alt="QR code to buy tickets"></div>
-  <div class="steps">
-    <span><b>1</b> Scan</span><span><b>2</b> Pay with UPI</span><span><b>3</b> Show QR at entry</span>
-  </div>
-  <div class="price"><?= e(money($price)) ?> per person</div>
-  <div class="url"><?= e($gateUrl) ?></div>
+  <div class="steps"><span><b>1</b> Scan</span><span><b>2</b> Pay with UPI</span><span><b>3</b> Show QR at entry</span></div>
+  <div class="price"><?= e(money($price)) ?> per person<small><?= e($gateUrl) ?></small></div>
+  <?php foreach ([['charminar','st1'],['cocktail','st2'],['glass','st3']] as [$n, $c]): if ($src = brand_asset('s-' . $n . '.webp')): ?><img class="st <?= $c ?>" src="<?= e($src) ?>" alt=""><?php endif; endforeach; ?>
 </div>
 </body>
 </html>

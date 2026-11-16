@@ -26,28 +26,40 @@ $lowStock = !$soldOut && $left <= max(10, (int) (capacity() * 0.1));
 
 render_header($s['event_name'], [
     'description' => $s['event_tagline'] ?: fmt_datetime($s['event_datetime']) . ($s['event_venue'] ? ' · ' . $s['event_venue'] : ''),
-    'og_image'    => $banner,
+    'og_image'    => $banner ?: (brand_asset('og-image.jpg') ? url(brand_asset('og-image.jpg')) : ''),
     'body_class'  => $isGate ? 'page-event is-gate' : 'page-event',
 ]);
 ?>
 <main class="event">
   <?php if (!$isGate): ?>
+  <?php $wordmark = brand_asset('wordmark.webp'); ?>
   <section class="hero<?= $banner ? ' has-banner' : '' ?>">
     <?php if ($banner): ?><img class="hero-img" src="<?= e($banner) ?>" alt=""><?php endif; ?>
-    <span class="sparkle" style="top:22%;left:12%" aria-hidden="true">✦</span>
-    <span class="sparkle s2" style="top:30%;right:14%" aria-hidden="true">✦</span>
-    <span class="sparkle s3" style="bottom:22%;left:22%" aria-hidden="true">✦</span>
+    <?= sticker('charminar', 'st-hero-a') ?>
+    <?= sticker('cocktail', 'st-hero-b') ?>
+    <?= sticker('glass', 'st-hero-c') ?>
     <div class="hero-text wrap">
-      <p class="eyebrow"><?= e(fmt_datetime($s['event_datetime'], 'l, j F Y')) ?></p>
-      <h1 class="display"><?= display_text($s['event_name']) ?></h1>
-      <?php if ($s['event_tagline']): ?><p class="tagline"><?= e($s['event_tagline']) ?></p><?php endif; ?>
-      <?php if ($salesOpen && !$soldOut): ?><p class="hero-cta"><a class="btn btn-primary" href="#book">Buy tickets</a></p><?php endif; ?>
+      <?php if ($wordmark): ?>
+        <img class="hero-wordmark" src="<?= e($wordmark) ?>" alt="LaLa Land" width="1400" height="515" fetchpriority="high">
+        <h1 class="tag tag-hero"><?= e($s['event_name']) ?></h1>
+      <?php else: ?>
+        <h1 class="display"><?= display_text($s['event_name']) ?></h1>
+      <?php endif; ?>
+      <?php if ($s['event_tagline']): ?><p class="tagline"><?= display_text($s['event_tagline']) ?></p><?php endif; ?>
+      <ul class="hero-chips">
+        <li><?= e(fmt_datetime($s['event_datetime'], 'D, j M · g:i A')) ?></li>
+        <?php if ($s['event_venue']): ?><li><?= e($s['event_venue']) ?></li><?php endif; ?>
+      </ul>
+      <?php if ($salesOpen && !$soldOut): ?><p class="hero-cta"><a class="btn btn-primary btn-big" href="#book">Get tickets · <?= e(money($price)) ?></a></p><?php endif; ?>
     </div>
   </section>
   <?php else: ?>
-  <section class="gate-head wrap">
-    <p class="eyebrow">Buy at the gate</p>
-    <h1 class="display small"><?= display_text($s['event_name']) ?></h1>
+  <section class="gate-head">
+    <div class="wrap">
+      <?php if (brand_asset('wordmark.webp')): ?><img class="gate-wordmark" src="<?= e(brand_asset('wordmark.webp')) ?>" alt="LaLa Land" width="1400" height="515"><?php endif; ?>
+      <p class="tag">Buy at the gate</p>
+      <h1 class="display small"><?= display_text($s['event_name']) ?></h1>
+    </div>
   </section>
   <?php endif; ?>
 
@@ -63,6 +75,7 @@ render_header($s['event_name'], [
       </dl>
       <?php if ($s['event_description']): ?>
       <h2 class="brand-title"><?= display_text("What's on") ?></h2>
+      <?= sticker('sunny-hyd', 'st-info') ?>
       <div class="prose"><?= nl2br(e($s['event_description'])) ?></div>
       <?php endif; ?>
       <?php if ($mapSrc): ?>
@@ -81,8 +94,8 @@ render_header($s['event_name'], [
           <p class="muted">All tickets have been sold. Seats held by unfinished payments are released after <?= (int) config('hold_minutes', 15) ?> minutes, so check back shortly.</p>
         <?php else: ?>
           <div class="book-head">
-            <h2 class="brand-title" style="margin:0">Tickets</h2>
-            <div class="price"><?= e(money($price)) ?><span>/person</span></div>
+            <h2 class="brand-title" style="margin:0"><?= display_text('Tickets') ?></h2>
+            <div class="burst"><span><?= e(money($price)) ?></span><small>each</small></div>
           </div>
           <?php if ($lowStock): ?><p class="stock">Only <?= $left ?> left</p><?php endif; ?>
 

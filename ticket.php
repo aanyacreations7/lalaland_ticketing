@@ -44,7 +44,8 @@ render_header('Your ticket', ['head' => $head, 'body_class' => 'page-ticket']);
 
   <article class="ticket<?= $b['checked_in_at'] ? ' is-used' : '' ?><?= $status !== 'paid' ? ' is-inactive' : '' ?>">
     <header class="ticket-top">
-      <p class="eyebrow">Admit <?= (int) $b['quantity'] ?></p>
+      <div class="burst burst-admit"><span>Admit <?= (int) $b['quantity'] ?></span></div>
+      <?php if ($wm = brand_asset('wordmark.webp')): ?><img class="ticket-wordmark" src="<?= e($wm) ?>" alt="" width="1400" height="515"><?php endif; ?>
       <h1><?= display_text($s['event_name']) ?></h1>
       <p class="ticket-when"><?= e(fmt_datetime($s['event_datetime'])) ?></p>
       <?php if ($s['event_venue']): ?><p class="ticket-where"><?= e($s['event_venue']) ?></p><?php endif; ?>
