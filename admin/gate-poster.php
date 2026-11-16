@@ -21,7 +21,7 @@ header('Content-Type: text/html; charset=utf-8');
 <meta name="robots" content="noindex">
 <title>Gate poster · <?= e($s['event_name']) ?></title>
 <?= brand_fonts_css() ?>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Archivo+Black&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Unbounded:wght@800;900&display=swap" rel="stylesheet">
 <style>
   @page { size: A4; margin: 0; }
   * { box-sizing: border-box; }

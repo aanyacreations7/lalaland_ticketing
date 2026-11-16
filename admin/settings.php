@@ -26,6 +26,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         'event_map_embed'      => extract_map_src($p('event_map_embed')),
         'event_map_link'       => safe_url($p('event_map_link')),
         'banner_url'           => safe_url($p('banner_url')),
+        'photo_2_url'          => safe_url($p('photo_2_url')),
         'logo_url'             => safe_url($p('logo_url')),
         'price_rupees'         => $p('price_rupees'),
         'gate_price_rupees'    => $p('gate_price_rupees'),
@@ -58,7 +59,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $errors[] = 'Max tickets per booking must be 1 to 50.';
     }
     if (!preg_match('/^#[0-9a-fA-F]{6}$/', $new['accent_color'])) {
-        $new['accent_color'] = '#ff522b';
+        $new['accent_color'] = '#ff8a1f';
     }
     if ($p('event_map_embed') !== '' && $new['event_map_embed'] === '') {
         $errors[] = 'Map embed must be the Google Maps "Embed a map" code (an iframe with google.com/maps/embed).';
@@ -112,7 +113,8 @@ render_header('Event settings', ['nav' => 'admin', 'body_class' => 'page-admin']
         <label class="field"><span>Ends <em>(optional, for calendars)</em></span><input type="datetime-local" name="event_end_datetime" value="<?= e($toLocal($s['event_end_datetime'])) ?>"></label>
       </div>
       <label class="field"><span>Description</span><textarea name="event_description" rows="6"><?= e($s['event_description']) ?></textarea></label>
-      <label class="field"><span>Banner image URL <em>(https, wide image ~1600×900)</em></span><input name="banner_url" value="<?= e($s['banner_url']) ?>" placeholder="https://yourwebsite.com/wp-content/uploads/banner.jpg"></label>
+      <label class="field"><span>Photo 2 URL <em>(second polaroid in the hero; portrait works best)</em></span><input name="photo_2_url" value="<?= e($s['photo_2_url']) ?>" placeholder="https://lalalandflea.com/wp-content/uploads/....jpg"></label>
+      <label class="field"><span>Photo 1 URL <em>(main hero polaroid and share image)</em></span><input name="banner_url" value="<?= e($s['banner_url']) ?>" placeholder="https://yourwebsite.com/wp-content/uploads/banner.jpg"></label>
       <label class="field"><span>Logo image URL <em>(https, shown in the header; transparent PNG works best)</em></span><input name="logo_url" value="<?= e($s['logo_url']) ?>" placeholder="https://lalalandflea.com/wp-content/uploads/.../logo.png"></label>
       <label class="field"><span>Accent colour</span><input type="color" name="accent_color" value="<?= e($s['accent_color']) ?>"></label>
     </section>

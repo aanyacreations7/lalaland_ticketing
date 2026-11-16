@@ -32,52 +32,57 @@ render_header($s['event_name'], [
 ?>
 <main class="event">
   <?php if (!$isGate): ?>
-  <?php $wordmark = brand_asset('wordmark.webp'); ?>
-  <section class="hero<?= $banner ? ' has-banner' : '' ?>">
-    <?php if ($banner): ?><img class="hero-img" src="<?= e($banner) ?>" alt=""><?php endif; ?>
-    <?= sticker('charminar', 'st-hero-a') ?>
-    <?= sticker('cocktail', 'st-hero-b') ?>
-    <?= sticker('glass', 'st-hero-c') ?>
-    <div class="hero-text wrap">
-      <?php if ($wordmark): ?>
-        <img class="hero-wordmark" src="<?= e($wordmark) ?>" alt="LaLa Land" width="1400" height="515" fetchpriority="high">
-        <h1 class="tag tag-hero"><?= e($s['event_name']) ?></h1>
-      <?php else: ?>
-        <h1 class="display"><?= display_text($s['event_name']) ?></h1>
-      <?php endif; ?>
-      <?php if ($s['event_tagline']): ?><p class="tagline"><?= display_text($s['event_tagline']) ?></p><?php endif; ?>
-      <ul class="hero-chips">
-        <li><?= e(fmt_datetime($s['event_datetime'], 'D, j M · g:i A')) ?></li>
-        <?php if ($s['event_venue']): ?><li><?= e($s['event_venue']) ?></li><?php endif; ?>
-      </ul>
-      <?php if ($salesOpen && !$soldOut): ?><p class="hero-cta"><a class="btn btn-primary btn-big" href="#book">Get tickets · <?= e(money($price)) ?></a></p><?php endif; ?>
+  <section class="hero dots">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="pill-tag"><?= e($s['event_name']) ?> ✦</p>
+        <h1 class="hero-title"><?= hero_title($s['event_tagline'] ?: $s['event_name']) ?></h1>
+        <?php if ($lede = first_paragraph($s['event_description'])): ?><p class="lede"><?= e($lede) ?></p><?php endif; ?>
+        <div class="chips">
+          <span class="chip"><?= icon('calendar') ?><?= e(fmt_datetime($s['event_datetime'], 'j F Y')) ?></span>
+          <?php if ($s['event_venue']): ?><span class="chip"><?= icon('pin') ?><?= e($s['event_venue']) ?></span><?php endif; ?>
+        </div>
+        <div class="ctas">
+          <?php if ($salesOpen && !$soldOut): ?><a class="btn btn-tomato" href="#book">Buy tickets →</a><?php endif; ?>
+          <?php if ($mapLink): ?><a class="btn btn-white" href="<?= e($mapLink) ?>" target="_blank" rel="noopener">Directions</a><?php endif; ?>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <?php $photo2 = safe_url($s['photo_2_url']); ?>
+        <?php if ($banner): ?><figure class="polaroid p1"><span class="tape"></span><img src="<?= e($banner) ?>" alt="" loading="eager"><figcaption>the city, one weekend</figcaption></figure><?php endif; ?>
+        <?php if ($photo2): ?><figure class="polaroid p2"><span class="tape tape-o"></span><img src="<?= e($photo2) ?>" alt=""><figcaption>good vibes only</figcaption></figure><?php endif; ?>
+        <?php if (!$banner && !$photo2 && ($logo = brand_asset('logo-sticker.webp'))): ?><img class="hero-logo" src="<?= e($logo) ?>" alt=""><?php endif; ?>
+        <?= sticker('charminar', 'st-a') ?>
+        <?= sticker('cat', 'st-b') ?>
+        <?= date_badge($s['event_datetime']) ?>
+      </div>
     </div>
   </section>
+  <div class="tapes" aria-hidden="true">
+    <div class="tape-row t1"><div><?= str_repeat('SHOP ✺ EAT ✺ DANCE ✺ MAKE MEMORIES ✺ ', 6) ?></div></div>
+    <div class="tape-row t2"><div><?= str_repeat('SHOP ✺ EAT ✺ DANCE ✺ MAKE MEMORIES ✺ ', 6) ?></div></div>
+  </div>
   <?php else: ?>
-  <section class="gate-head">
+  <section class="gate-head dots">
     <div class="wrap">
-      <?php if (brand_asset('wordmark.webp')): ?><img class="gate-wordmark" src="<?= e(brand_asset('wordmark.webp')) ?>" alt="LaLa Land" width="1400" height="515"><?php endif; ?>
-      <p class="tag">Buy at the gate</p>
-      <h1 class="display small"><?= display_text($s['event_name']) ?></h1>
+      <p class="pill-tag">Buy at the gate ✦</p>
+      <h1 class="hero-title small"><?= hero_title($s['event_name']) ?></h1>
+      <div class="chips"><span class="chip"><?= icon('calendar') ?><?= e(fmt_datetime($s['event_datetime'], 'j F Y')) ?></span></div>
     </div>
   </section>
   <?php endif; ?>
 
-  <div class="wrap event-grid">
+  <div class="event-body dots"><div class="wrap event-grid">
     <?php if (!$isGate): ?>
     <section class="event-info">
-      <dl class="facts">
-        <div><dt>When</dt><dd><?= e(fmt_datetime($s['event_datetime'])) ?></dd></div>
-        <?php if ($s['event_venue']): ?>
-        <div><dt>Where</dt><dd><?= e($s['event_venue']) ?><?php if ($mapLink): ?> · <a href="<?= e($mapLink) ?>" target="_blank" rel="noopener">Directions</a><?php endif; ?></dd></div>
-        <?php endif; ?>
-        <div><dt>Price</dt><dd><?= e(money($price)) ?> <span class="muted">per person</span></dd></div>
-      </dl>
-      <?php if ($s['event_description']): ?>
-      <h2 class="brand-title"><?= display_text("What's on") ?></h2>
-      <?= sticker('sunny-hyd', 'st-info') ?>
-      <div class="prose"><?= nl2br(e($s['event_description'])) ?></div>
-      <?php endif; ?>
+      <p class="eyebrow">What is LaLa Land?</p>
+      <h2 class="sec-title">Hyderabad’s <span class="hl">happiest</span> flea.</h2>
+      <?php $rest = trim((string) (preg_split('/\R/u', trim($s['event_description']), 2)[1] ?? '')); if ($rest !== ''): ?><div class="prose"><?= nl2br(e($rest)) ?></div><?php endif; ?>
+      <div class="stats">
+        <div class="stat-card s-sun"><strong><?= e(fmt_datetime($s['event_datetime'], 'j M')) ?></strong><span><?= e(fmt_datetime($s['event_datetime'], 'l · g:i A')) ?></span></div>
+        <?php if ($s['event_venue']): $vw = preg_split('/[\s,]+/u', trim($s['event_venue']), 2); ?><div class="stat-card s-peri"><strong><?= e($vw[0]) ?></strong><span><?= e(trim($vw[1] ?? '', ' ,')) ?><?php if ($mapLink): ?><br><a href="<?= e($mapLink) ?>" target="_blank" rel="noopener">Get directions →</a><?php endif; ?></span></div><?php endif; ?>
+        <div class="stat-card s-cream"><strong><?= e(money($price)) ?></strong><span>per person</span></div>
+      </div>
       <?php if ($mapSrc): ?>
       <div class="map"><iframe src="<?= e($mapSrc) ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Venue map" allowfullscreen></iframe></div>
       <?php endif; ?>
@@ -93,9 +98,10 @@ render_header($s['event_name'], [
           <h2>Sold out</h2>
           <p class="muted">All tickets have been sold. Seats held by unfinished payments are released after <?= (int) config('hold_minutes', 15) ?> minutes, so check back shortly.</p>
         <?php else: ?>
-          <div class="book-head">
-            <h2 class="brand-title" style="margin:0"><?= display_text('Tickets') ?></h2>
-            <div class="burst"><span><?= e(money($price)) ?></span><small>each</small></div>
+          <div class="stub">
+            <span class="stub-meta">Admit one · <?= e(fmt_datetime($s['event_datetime'], 'd.m.Y')) ?></span>
+            <span class="stub-title">Grab your ticket</span>
+            <span class="stub-price"><?= e(money($price)) ?> <small>per person</small></span>
           </div>
           <?php if ($lowStock): ?><p class="stock">Only <?= $left ?> left</p><?php endif; ?>
 
@@ -147,11 +153,11 @@ render_header($s['event_name'], [
         <?php endif; ?>
       </div>
     </aside>
-  </div>
+  </div></div>
 
   <?php if (!$isGate && $s['terms']): ?>
   <section class="wrap terms" id="terms">
-    <h3>Terms</h3>
+    <h3>The fine print</h3>
     <div class="prose small"><?= nl2br(e($s['terms'])) ?></div>
   </section>
   <?php endif; ?>

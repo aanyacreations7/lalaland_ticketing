@@ -210,6 +210,7 @@ function settings_defaults(): array
         'event_map_embed'      => '',
         'event_map_link'       => '',
         'banner_url'           => '',
+        'photo_2_url'          => '',
         'logo_url'             => '',
         'price_rupees'         => '499',
         'gate_price_rupees'    => '',
@@ -220,7 +221,7 @@ function settings_defaults(): array
         'extra_field_label'    => '',
         'extra_field_required' => '0',
         'terms'                => 'Tickets are non-transferable. Entry is allowed once per ticket.',
-        'accent_color'         => '#ff522b',
+        'accent_color'         => '#ff8a1f',
     ];
 }
 
