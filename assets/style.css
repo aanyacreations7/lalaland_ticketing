@@ -429,7 +429,6 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
 .foot-top { position: relative; padding: 40px 0 46px; }
 .foot h2 { font-size: clamp(2.6rem, 8vw, 5.6rem); }
 .foot h2 span { display: inline-block; transform: rotate(-3deg); background: var(--accent); border: 3px solid var(--ink); padding: 4px 14px 0; border-radius: 14px; margin-top: 8px; }
-.st-foot { width: 90px; right: 4%; top: 0; transform: rotate(8deg); }
 .foot-bot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; border-top: 3px solid var(--ink); padding-top: 22px; }
 .foot-logo { display: inline-flex; background: var(--ink); border-radius: 12px; padding: 10px 14px; text-decoration: none; color: var(--sun); font-family: var(--display); }
 .foot-logo img { height: 30px; width: auto; display: block; }
@@ -437,7 +436,6 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
 .foot-bot nav a { font-weight: 800; font-size: .95rem; text-decoration: none; }
 .foot-bot nav a:hover { text-decoration: underline; }
 .foot-legal { font-size: .8rem; font-weight: 600; margin: 18px 0 0; color: var(--ink-2); }
-@media (min-width: 900px) { .st-foot { width: 130px; top: -40px; } }
 
 /* ---------- Ticket page ---------- */
 .page-ticket { background-color: var(--sun); background-image: radial-gradient(rgba(26,26,26,.13) 1.6px, transparent 1.7px); background-size: 22px 22px; }

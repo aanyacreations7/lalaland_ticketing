@@ -90,7 +90,6 @@ function render_footer(array $opt = []): void
   <div class="wrap">
     <div class="foot-top">
       <h2>See you at <span>LaLa Land.</span></h2>
-      <?= sticker('charminar', 'st-foot') ?>
     </div>
     <div class="foot-bot">
       <a class="foot-logo" href="<?= e($main ?: '/') ?>"><?php if ($wm = brand_asset('wordmark-sm.webp')): ?><img src="<?= e($wm) ?>" alt="LaLa Land" width="140" height="34"><?php else: ?>LaLa Land<?php endif; ?></a>
