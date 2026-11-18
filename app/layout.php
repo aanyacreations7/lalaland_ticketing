@@ -33,6 +33,7 @@ function render_header(string $title, array $opt = []): void
 <?php if ($nav !== 'public'): ?>
 <meta name="robots" content="noindex, nofollow">
 <?php endif; ?>
+<script>document.documentElement.classList.add('js')</script>
 <meta name="theme-color" content="<?= e($accent) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,9 +50,10 @@ function render_header(string $title, array $opt = []): void
     <a class="site-logo" href="<?= e($main ?: '/') ?>">
       <?php if ($logo): ?><img src="<?= e($logo) ?>" alt="<?= e($eventName) ?>" width="180" height="44"><?php else: ?><span><?= e($eventName) ?></span><?php endif; ?>
     </a>
-    <nav class="site-nav">
-      <?php if ($main): foreach (main_site_links('nav') as [$label, $href]): ?><a href="<?= e($href) ?>"><?= e($label) ?></a><?php endforeach; endif; ?>
+    <nav class="site-nav" aria-label="Main">
+      <?php if ($main): ?><div class="site-links" id="site-links"><?php foreach (main_site_links('nav') as [$label, $href]): ?><a href="<?= e($href) ?>"><?= e($label) ?></a><?php endforeach; ?></div><?php endif; ?>
       <a class="pill" href="/#book">Buy tickets</a>
+      <?php if ($main): ?><?= menu_button('site-links') ?><?php endif; ?>
     </nav>
   </div>
 </header>
@@ -59,17 +61,18 @@ function render_header(string $title, array $opt = []): void
 <?php if ($nav === 'staff' || $nav === 'admin'): ?>
 <header class="topbar">
   <a class="brand" href="<?= $nav === 'admin' ? '/admin/' : '/scan.php' ?>"><?= e($eventName) ?></a>
-  <nav class="topnav">
+  <?= menu_button('topnav') ?>
+  <nav class="topnav" id="topnav" aria-label="Main">
     <?php if ($nav === 'admin'): ?>
-      <a href="/admin/">Dashboard</a>
-      <a href="/admin/bookings.php">Bookings</a>
-      <a href="/admin/settings.php">Event</a>
-      <a href="/admin/staff.php">Staff</a>
+      <?= nav_link('/admin/', 'Dashboard') ?>
+      <?= nav_link('/admin/bookings.php', 'Bookings') ?>
+      <?= nav_link('/admin/settings.php', 'Event') ?>
+      <?= nav_link('/admin/staff.php', 'Staff') ?>
     <?php endif; ?>
-    <a href="/scan.php">Scanner</a>
-    <a href="/boxoffice.php">Box office</a>
-    <?php if ($nav === 'staff' && $user && $user['role'] === 'admin'): ?><a href="/admin/">Admin</a><?php endif; ?>
-    <?php if ($user): ?><a href="/logout.php" class="muted">Sign out</a><?php endif; ?>
+    <?= nav_link('/scan.php', 'Scanner') ?>
+    <?= nav_link('/boxoffice.php', 'Box office') ?>
+    <?php if ($nav === 'staff' && $user && $user['role'] === 'admin'): ?><?= nav_link('/admin/', 'Admin') ?><?php endif; ?>
+    <?php if ($user): ?><a href="/logout.php" class="nav-out">Sign out</a><?php endif; ?>
   </nav>
 </header>
 <?php foreach (take_flashes() as $f): ?>
@@ -97,6 +100,17 @@ function render_footer(array $opt = []): void
   </div>
 </footer>
 <?php endif; ?>
+<script>
+document.querySelectorAll('.menu-btn').forEach(function (btn) {
+  var menu = document.getElementById(btn.getAttribute('aria-controls'));
+  var header = btn.closest('header');
+  function set(open) { header.classList.toggle('menu-open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false'); btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); }
+  btn.addEventListener('click', function () { set(!header.classList.contains('menu-open')); });
+  menu.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+  document.addEventListener('click', function (e) { if (!header.contains(e.target)) set(false); });
+});
+</script>
 </body>
 </html>
 <?php
@@ -257,4 +271,20 @@ function pager(int $page, int $pages, int $total, int $per, callable $link, arra
     }
     $h .= '</select></label></nav>';
     return $h;
+}
+
+/** Hamburger button that opens the menu with the given id (phones/tablets only). */
+function menu_button(string $controls): string
+{
+    return '<button class="menu-btn" type="button" aria-controls="' . e($controls) . '" aria-expanded="false" aria-label="Open menu">'
+        . '<span></span><span></span><span></span></button>';
+}
+
+/** Nav link that is marked as current when it points at this page. */
+function nav_link(string $href, string $label): string
+{
+    $here = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
+    $norm = static fn(string $p): string => preg_replace('~/index\.php$~', '/', $p) ?? $p;
+    $current = $norm($here) === $norm($href);
+    return '<a href="' . e($href) . '"' . ($current ? ' aria-current="page"' : '') . '>' . e($label) . '</a>';
 }

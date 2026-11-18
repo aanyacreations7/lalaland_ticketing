@@ -328,7 +328,7 @@ a { color: inherit; }
 .site-nav a:not(.pill) { font-weight: 700; text-decoration: none; }
 .site-nav a:not(.pill):hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
 .header-cta { display: none; }
-@media (max-width: 860px) { .site-nav a:not(.pill) { display: none; } .site-nav .pill { padding: 11px 16px; font-size: .85rem; } }
+@media (max-width: 860px) { .site-nav .pill { padding: 11px 16px; font-size: .85rem; } }
 
 /* ---------- Hero ---------- */
 .hero { background-color: var(--sun); padding: 56px 0 96px; border-bottom: 0; overflow: hidden; color: var(--ink); }
@@ -499,3 +499,33 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
 .pager-per { display: flex; align-items: center; gap: 8px; font-size: .9rem; font-weight: 700; }
 .pager-per select { width: auto; min-height: 40px; padding: 6px 30px 6px 10px; border-width: 2px; border-radius: 10px; }
 .table-scroll .table th, .table-scroll .table td { white-space: nowrap; }
+
+/* ---------- Menu icon (phones and tablets) ---------- */
+.menu-btn { display: none; flex: none; width: 44px; height: 44px; padding: 0; border: 2px solid currentColor; border-radius: 12px; background: transparent; color: inherit; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+.menu-btn span { display: block; width: 20px; height: 2.5px; border-radius: 2px; background: currentColor; transition: transform .2s, opacity .2s; }
+.menu-open .menu-btn span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+.menu-open .menu-btn span:nth-child(2) { opacity: 0; }
+.menu-open .menu-btn span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+.topnav a[aria-current="page"] { color: var(--sun); background: rgba(255,255,255,.08); }
+.site-links { display: contents; }
+
+@media (max-width: 900px) {
+  /* Admin / staff bar */
+  .js .topbar { flex-wrap: wrap; }
+  .js .topbar .menu-btn { display: flex; color: #fff; border-color: rgba(255,255,255,.35); }
+  .js .topnav { display: none; flex-basis: 100%; flex-direction: column; gap: 2px; overflow: visible; padding: 6px 0 4px; border-top: 1px solid rgba(255,255,255,.12); margin-top: 6px; }
+  .js .topbar.menu-open .topnav { display: flex; }
+  .js .topnav a { font-size: 1rem; padding: 12px 12px; border-radius: 10px; }
+  .topnav .nav-out { color: rgba(255,255,255,.6); }
+}
+
+@media (max-width: 860px) {
+  /* Public site header: Buy tickets stays visible, the rest goes in the menu */
+  .site-nav { gap: 10px; }
+  .js .site-header .menu-btn { display: flex; color: var(--ink); border: 3px solid var(--ink); }
+  .js .site-links { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; background: var(--cream); border-bottom: 3px solid var(--ink); padding: 8px 20px 16px; }
+  .js .site-header.menu-open .site-links { display: flex; }
+  .js .site-links a { display: block; padding: 14px 4px; font: 400 1.2rem var(--display); text-transform: uppercase; text-decoration: none; border-bottom: 2px dashed rgba(17,17,17,.2); }
+  .js .site-links a:last-child { border-bottom: 0; }
+  html:not(.js) .site-links { display: none; }
+}
