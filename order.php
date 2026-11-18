@@ -19,9 +19,13 @@ if (trim((string) ($in['website'] ?? '')) !== '') {
     json_error('Please try again.', 400);
 }
 
-// Rate limit: 10 orders per IP per 10 minutes.
-$bucket = 'order:' . client_ip();
-if (rate_count($bucket, 600) >= 10) {
+// Rate limit per connection per 10 minutes. Gate buyers often share the
+// venue Wi-Fi (one IP for everyone), so the gate page gets a much higher limit.
+$limit = $source === 'gate'
+    ? max(1, (int) config('gate_orders_per_10min', 150))
+    : max(1, (int) config('online_orders_per_10min', 10));
+$bucket = 'order:' . $source . ':' . client_ip();
+if (rate_count($bucket, 600) >= $limit) {
     json_error('Too many attempts from your connection. Please wait a few minutes.', 429);
 }
 rate_hit($bucket);

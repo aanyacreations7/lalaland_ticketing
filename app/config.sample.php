@@ -52,6 +52,10 @@ return [
 
     // Seats are held for unpaid (pending) bookings for this many minutes.
     'hold_minutes' => 15,
+    // Order attempts allowed per internet connection per 10 minutes. Gate buyers
+    // usually share the venue Wi-Fi, so that limit is much higher.
+    'online_orders_per_10min' => 10,
+    'gate_orders_per_10min'   => 150,
 
     'debug' => false, // true shows errors on screen; must be false in production
 ];

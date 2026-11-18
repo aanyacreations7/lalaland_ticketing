@@ -12,6 +12,10 @@ function render_header(string $title, array $opt = []): void
     start_session(); // before any output: pages below print CSRF fields
     $accent = accent_color();
     $user = in_array($nav, ['staff', 'admin'], true) ? current_user() : null;
+    // Admins keep the full admin menu on the scanner and box office pages too.
+    if ($nav === 'staff' && $user && $user['role'] === 'admin') {
+        $nav = 'admin';
+    }
     $eventName = setting('event_name');
     $fullTitle = $title === $eventName || $title === '' ? $eventName : $title . ' · ' . $eventName;
     header('Content-Type: text/html; charset=utf-8');
@@ -71,7 +75,6 @@ function render_header(string $title, array $opt = []): void
     <?php endif; ?>
     <?= nav_link('/scan.php', 'Scanner') ?>
     <?= nav_link('/boxoffice.php', 'Box office') ?>
-    <?php if ($nav === 'staff' && $user && $user['role'] === 'admin'): ?><?= nav_link('/admin/', 'Admin') ?><?php endif; ?>
     <?php if ($user): ?><a href="/logout.php" class="nav-out">Sign out</a><?php endif; ?>
   </nav>
 </header>
