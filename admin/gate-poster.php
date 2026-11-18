@@ -49,7 +49,7 @@ header('Content-Type: text/html; charset=utf-8');
   .st3 { width: 26mm; right: 2mm; bottom: -2mm; transform: rotate(-6deg); }
   .toolbar { text-align: center; margin: 16px; font-family: Poppins, sans-serif; }
   .toolbar button { font: 700 15px Poppins, sans-serif; padding: 12px 24px; border-radius: 999px; border: 2px solid #1e1e1e; background: #ff502b; color: #fff; cursor: pointer; }
-  @media print { html, body { background: #fff; } .sheet { margin: 0; } .toolbar { display: none; } }
+  @media print { html, body { background: #fff; } .sheet { margin: 0; zoom: 1 !important; } .toolbar { display: none; } }
 </style>
 </head>
 <body>
@@ -66,5 +66,13 @@ header('Content-Type: text/html; charset=utf-8');
   <div class="price"><?= e(money($price)) ?> per person<small><?= e($gateUrl) ?></small></div>
   <?php foreach ([['charminar','st1'],['cocktail','st2'],['glass','st3']] as [$n, $c]): if ($src = brand_asset('s-' . $n . '.webp')): ?><img class="st <?= $c ?>" src="<?= e($src) ?>" alt=""><?php endif; endforeach; ?>
 </div>
+<script>
+// On a phone screen, shrink the A4 preview to fit. Printing is unaffected.
+(function () {
+  var sheet = document.querySelector('.sheet');
+  function fit() { sheet.style.zoom = ''; var z = Math.min(1, (document.documentElement.clientWidth - 16) / sheet.offsetWidth); if (z < 1) sheet.style.zoom = z; }
+  fit(); window.addEventListener('resize', fit);
+})();
+</script>
 </body>
 </html>

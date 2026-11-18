@@ -100,6 +100,13 @@ function render_footer(array $opt = []): void
 </footer>
 <?php endif; ?>
 <script>
+// Label each table cell with its column name so tables can stack on phones.
+document.querySelectorAll('.table').forEach(function (t) {
+  var heads = Array.prototype.map.call(t.querySelectorAll('thead th'), function (th) { return th.textContent.trim(); });
+  t.querySelectorAll('tbody tr').forEach(function (tr) {
+    Array.prototype.forEach.call(tr.children, function (td, i) { if (heads[i] && !td.hasAttribute('data-label')) td.setAttribute('data-label', heads[i]); });
+  });
+});
 document.querySelectorAll('.menu-btn').forEach(function (btn) {
   var menu = document.getElementById(btn.getAttribute('aria-controls'));
   var header = btn.closest('header');

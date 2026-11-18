@@ -533,3 +533,75 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
 .page-admin .card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .page-admin .card .table th, .page-admin .card .table td { white-space: nowrap; }
 body.page-admin, body.page-login, body.page-boxoffice { background-image: radial-gradient(rgba(26,26,26,.13) 1.6px, transparent 1.7px); background-size: 22px 22px; }
+
+/* ==========================================================================
+   Phone & tablet fixes: nothing may push past the screen edge.
+   ========================================================================== */
+html, body { overflow-x: clip; }
+h1, h2, h3, .stat-card strong, .stub-title, .chip, .lede, .prose, .kv dd { overflow-wrap: break-word; }
+.wrap > *, .event-grid > *, .hero-grid > *, .grid-2 > *, .grid-3 > *, .stats > *, .card { min-width: 0; }
+.chip { max-width: 100%; }
+.card-head, .book-head { flex-wrap: wrap; row-gap: 4px; }
+.card-head > a { white-space: nowrap; font-weight: 700; }
+
+/* Admin stat tiles: stack on phones, shrink big numbers to fit */
+.admin .stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+.stat strong { font-size: clamp(1.6rem, 8vw, 2rem); line-height: 1.1; overflow-wrap: anywhere; }
+.stat strong small { white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .hero { padding: 40px 0 84px; }
+  .hero-title { font-size: clamp(1.9rem, 9vw, 2.6rem); }
+  .sec-title { font-size: clamp(1.8rem, 8.5vw, 2.4rem); }
+  .foot h2 { font-size: clamp(2rem, 10vw, 2.8rem); }
+  .admin-head h1, .login-card h1, .narrow .card > h1 { font-size: clamp(1.4rem, 7vw, 1.9rem); }
+  .card h2 { font-size: clamp(1.1rem, 5.5vw, 1.4rem); }
+  .card { padding: 18px 16px; box-shadow: 5px 5px 0 var(--ink); }
+  .book-card { padding: 0 16px 20px; }
+  .stub { margin: 0 -16px 22px; padding: 20px 20px 22px; }
+  .stub-title { font-size: clamp(1.3rem, 6.5vw, 1.65rem); }
+  .btn { padding: 12px 18px; }
+  .ctas .btn { flex: 1 1 auto; }
+  .stats { grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 14px; }
+  .stat-card strong { font-size: clamp(1.25rem, 6vw, 1.7rem); }
+  .wrap { padding: 0 16px; }
+  .price { font-size: 1.3rem; }
+  .ticket-meta { grid-template-columns: 1fr 1fr; }
+  .ticket-meta > div:last-child { grid-column: 1 / -1; }
+  .pager { justify-content: center; }
+  .inline-form { flex-wrap: wrap; }
+
+  /* Tables become one block per row, each cell labelled with its column */
+  .page-admin .card.table-scroll, .page-admin .card:has(> .table), .page-admin .card:has(.table-scroll) { overflow-x: visible; }
+  .table-scroll { padding: 8px 4px; overflow-x: visible; }
+  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+  .table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .table tr { padding: 10px 0; border-bottom: 2px dashed rgba(17,17,17,.2); }
+  .table tr:last-child { border-bottom: 0; }
+  .table td, .table-scroll .table td, .page-admin .card .table td { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 3px 0; border: 0; text-align: right; white-space: normal; overflow-wrap: anywhere; }
+  .table td::before { content: attr(data-label); flex: none; text-align: left; font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .table td:first-child { font-weight: 700; font-size: 1rem; }
+  .table td:empty, .table td[data-label=""]::before { display: none; }
+  .table .num { text-align: right; }
+}
+
+/* Headers on small phones: keep logo, Buy tickets and menu on one line */
+.site-header-in { min-width: 0; }
+.site-logo { min-width: 0; flex: 0 1 auto; }
+.site-logo img { max-width: 100%; height: auto; max-height: 42px; }
+.site-nav { flex: none; }
+.brand { min-width: 0; flex: 0 1 auto; }
+.brand img { max-width: 100%; height: auto; max-height: 34px; }
+.brand span { flex: none; }
+@media (max-width: 400px) {
+  .site-header-in { gap: 10px; min-height: 64px; }
+  .site-logo img { max-height: 34px; }
+  .site-nav { gap: 8px; }
+  .site-nav .pill { padding: 10px 12px; font-size: .78rem; }
+  .menu-btn { width: 40px; height: 40px; }
+  .topbar { padding: 10px 14px; gap: 8px; }
+  .brand { gap: 6px; font-size: .78rem; }
+  .brand img { max-height: 28px; }
+}
+.kv { grid-template-columns: minmax(84px, 100px) minmax(0, 1fr); }
+@media (min-width: 720px) and (max-width: 959px) { .grid-2 { grid-template-columns: 1fr; } }
