@@ -60,7 +60,7 @@ function render_header(string $title, array $opt = []): void
 <?php endif; ?>
 <?php if ($nav === 'staff' || $nav === 'admin'): ?>
 <header class="topbar">
-  <a class="brand" href="<?= $nav === 'admin' ? '/admin/' : '/scan.php' ?>"><?= e($eventName) ?></a>
+  <a class="brand" href="<?= $nav === 'admin' ? '/admin/' : '/scan.php' ?>"><?php $logo = safe_url(setting('logo_url')) ?: brand_asset('wordmark-sm.webp'); if ($logo): ?><img src="<?= e($logo) ?>" alt="" width="120" height="30"><?php endif; ?><span><?= $nav === 'admin' ? 'Admin' : 'Staff' ?></span></a>
   <?= menu_button('topnav') ?>
   <nav class="topnav" id="topnav" aria-label="Main">
     <?php if ($nav === 'admin'): ?>
@@ -130,27 +130,58 @@ function sticker(string $name, string $class = ''): string
 }
 
 /**
- * @font-face rules for the licensed brand fonts, only when their files have
- * been uploaded to assets/fonts (they are not in the public repository).
+ * Where each brand font lives on the main site (path under main_site_url)
+ * and the file name it is cached under in assets/fonts. Can be overridden
+ * with 'brand_fonts' in app/config.php if the main site moves them.
+ *
+ * @return array<string, array{0:string,1:string}>
+ */
+function brand_font_sources(): array
+{
+    $defaults = [
+        'woodburger'    => ['/wp-content/uploads/2025/10/VLNL-WoodBurger-W00-Regular.ttf', 'VLNL-WoodBurger-W00-Regular.ttf'],
+        'antique-olive' => ['/wp-content/uploads/2025/09/Antique-Olive-Regular.ttf', 'Antique-Olive-Regular.ttf'],
+        'antique-olive-bold' => ['/wp-content/uploads/2025/09/AntiqueOliveBold.ttf', 'AntiqueOliveBold.ttf'],
+    ];
+    $custom = config('brand_fonts');
+    return is_array($custom) ? array_merge($defaults, $custom) : $defaults;
+}
+
+/**
+ * @font-face rules for the main site's fonts (Woodburger for headings,
+ * Antique Olive for text). A copy already in assets/fonts is used directly;
+ * otherwise font.php fetches it once from the main site and caches it.
  */
 function brand_fonts_css(): string
 {
     $faces = [
-        ['Woodburger', ['woodburger.woff', 'woodburger.ttf', 'VLNL-WoodBurger-W00-Regular.ttf'], '400'],
-        ['Antique Olive', ['antique-olive.woff', 'Antique-Olive-Regular.ttf', 'Antique Olive Regular.ttf'], '400'],
-        ['Antique Olive', ['antique-olive-bold.woff', 'AntiqueOliveBold.ttf'], '700 900'],
-        ['Antique Olive Compact', ['antique-olive-compact.woff', 'AQCT.ttf'], '400'],
+        ['Woodburger', 'woodburger', ['woodburger.woff2', 'woodburger.woff'], '400'],
+        ['Antique Olive', 'antique-olive', ['antique-olive.woff'], '400 600'],
+        ['Antique Olive', 'antique-olive-bold', ['antique-olive-bold.woff'], '700 900'],
     ];
+    $sources = brand_font_sources();
+    $canFetch = safe_url((string) config('main_site_url')) !== '';
     $css = '';
-    foreach ($faces as [$family, $files, $weight]) {
-        foreach ($files as $file) {
-            if (is_file(ROOT_DIR . '/assets/fonts/' . $file)) {
-                $fmt = str_ends_with($file, '.woff') ? 'woff' : 'truetype';
-                $url = '/assets/fonts/' . rawurlencode($file);
-                $css .= "@font-face{font-family:'$family';src:url('$url') format('$fmt');font-weight:$weight;font-style:normal;font-display:swap}";
+    foreach ($faces as [$family, $key, $files, $weight]) {
+        $url = '';
+        $fmt = 'truetype';
+        foreach (array_merge($files, [$sources[$key][1] ?? '']) as $file) {
+            if ($file !== '' && is_file(ROOT_DIR . '/assets/fonts/' . $file)) {
+                $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                $fmt = ['woff2' => 'woff2', 'woff' => 'woff', 'otf' => 'opentype'][$ext] ?? 'truetype';
+                $url = '/assets/fonts/' . rawurlencode($file) . '?v=' . asset_version('fonts/' . $file);
                 break;
             }
         }
+        if ($url === '' && $canFetch && isset($sources[$key])) {
+            $url = '/font.php?f=' . $key;
+        }
+        if ($url !== '') {
+            $css .= "@font-face{font-family:'$family';src:url('$url') format('$fmt');font-weight:$weight;font-style:normal;font-display:swap}";
+        }
+    }
+    if (is_file(ROOT_DIR . '/assets/fonts/antique-olive-compact.woff')) {
+        $css .= "@font-face{font-family:'Antique Olive Compact';src:url('/assets/fonts/antique-olive-compact.woff') format('woff');font-weight:400;font-display:swap}";
     }
     return $css ? "<style>$css</style>\n" : '';
 }

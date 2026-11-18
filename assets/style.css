@@ -459,9 +459,14 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
 .ticket-actions .btn { font-size: .95rem; }
 
 /* ---------- Staff / admin ---------- */
-.topbar { background: var(--ink); border-bottom: 4px solid var(--sun); }
-.brand { font: 400 1rem var(--display); color: var(--sun); text-transform: uppercase; }
-.topnav a { font-weight: 700; }
+.topbar { background: var(--cream); color: var(--ink); border-bottom: 3px solid var(--ink); padding: 10px 20px; min-height: 66px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; max-width: none; color: var(--ink); font: 400 .9rem/1 var(--display); text-transform: uppercase; overflow: visible; }
+.brand img { height: 34px; width: auto; display: block; }
+.brand span { background: var(--peri); border: 2px solid var(--ink); border-radius: 999px; padding: 5px 10px 4px; transform: rotate(-3deg); }
+.topnav a { color: var(--ink); font-weight: 700; font-size: .95rem; border-radius: 10px; }
+.topnav a:hover { background: var(--sun); color: var(--ink); }
+.topnav a[aria-current="page"] { background: var(--ink); color: var(--sun); }
+.topnav .nav-out { color: var(--ink-2); }
 .admin-head h1, .login-card h1, .narrow .card > h1 { font-size: 1.9rem; }
 .stat { border: 3px solid var(--ink); border-radius: 20px; box-shadow: var(--pop); background: var(--white); }
 .stat span { color: var(--ink-2); font-weight: 800; letter-spacing: 1.5px; }
@@ -506,17 +511,15 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
 .menu-open .menu-btn span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
 .menu-open .menu-btn span:nth-child(2) { opacity: 0; }
 .menu-open .menu-btn span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
-.topnav a[aria-current="page"] { color: var(--sun); background: rgba(255,255,255,.08); }
 .site-links { display: contents; }
 
 @media (max-width: 900px) {
   /* Admin / staff bar */
   .js .topbar { flex-wrap: wrap; }
-  .js .topbar .menu-btn { display: flex; color: #fff; border-color: rgba(255,255,255,.35); }
-  .js .topnav { display: none; flex-basis: 100%; flex-direction: column; gap: 2px; overflow: visible; padding: 6px 0 4px; border-top: 1px solid rgba(255,255,255,.12); margin-top: 6px; }
+  .js .topbar .menu-btn { display: flex; color: var(--ink); border: 3px solid var(--ink); }
+  .js .topnav { display: none; flex-basis: 100%; flex-direction: column; gap: 4px; overflow: visible; padding: 8px 0 6px; border-top: 2px dashed rgba(17,17,17,.25); margin-top: 8px; }
   .js .topbar.menu-open .topnav { display: flex; }
   .js .topnav a { font-size: 1rem; padding: 12px 12px; border-radius: 10px; }
-  .topnav .nav-out { color: rgba(255,255,255,.6); }
 }
 
 @media (max-width: 860px) {
@@ -529,3 +532,7 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
   .js .site-links a:last-child { border-bottom: 0; }
   html:not(.js) .site-links { display: none; }
 }
+.page-admin main.admin { padding-top: 28px; }
+.page-admin .card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.page-admin .card .table th, .page-admin .card .table td { white-space: nowrap; }
+body.page-admin, body.page-login, body.page-boxoffice { background-image: radial-gradient(rgba(26,26,26,.13) 1.6px, transparent 1.7px); background-size: 22px 22px; }

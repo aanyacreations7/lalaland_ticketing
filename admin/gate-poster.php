@@ -26,7 +26,7 @@ header('Content-Type: text/html; charset=utf-8');
   @page { size: A4; margin: 0; }
   * { box-sizing: border-box; }
   :root { --ink:#1e1e1e; --sun:#ffd600; --cream:#fffacf; --accent:<?= e($accent) ?>; --marigold:#ffc01d; --peri:#8585ff;
-    --display:'Antique Olive Compact','Archivo Black',sans-serif; --body:'Antique Olive','Poppins',sans-serif; }
+    --display:'Woodburger','Unbounded','Antique Olive Compact',sans-serif; --body:'Antique Olive','Poppins',sans-serif; }
   html, body { margin: 0; background: #ccc; font-family: var(--body); color: var(--ink); }
   .sp { font-family: var(--body); }
   .sheet { position: relative; overflow: hidden; width: 210mm; height: 297mm; margin: 10mm auto; background: var(--sun); padding: 14mm 14mm 12mm;
