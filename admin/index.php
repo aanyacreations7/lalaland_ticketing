@@ -131,7 +131,7 @@ render_header('Dashboard', ['nav' => 'admin', 'body_class' => 'page-admin']);
       <?php endforeach; ?>
       </tbody>
     </table>
-    <?php if ($latestPages > 1): ?><?= pager($latestPage, $latestPages, $latestTotal, $latestPer, $latestLink, []) ?><?php endif; ?>
+    <?php if ($latestTotal > 0): ?><?= pager($latestPage, $latestPages, $latestTotal, $latestPer, $latestLink, []) ?><?php endif; ?>
     <?php endif; ?>
   </section>
 
