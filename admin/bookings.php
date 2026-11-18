@@ -164,7 +164,8 @@ $status = in_array($_GET['status'] ?? '', BOOKING_STATUSES, true) ? $_GET['statu
 $source = in_array($_GET['source'] ?? '', BOOKING_SOURCES, true) ? $_GET['source'] : '';
 $entered = in_array($_GET['entered'] ?? '', ['yes', 'no'], true) ? $_GET['entered'] : '';
 $page = max(1, (int) ($_GET['page'] ?? 1));
-$per = in_array((int) ($_GET['per'] ?? 0), [20, 50, 100], true) ? (int) $_GET['per'] : 20;
+$perOptions = [10, 20, 50, 100];
+$per = in_array((int) ($_GET['per'] ?? 0), $perOptions, true) ? (int) $_GET['per'] : 10;
 
 $where = [];
 $params = [];
@@ -202,7 +203,7 @@ $page = min($page, $pages);
 $rows = q("SELECT * FROM tk_bookings $whereSql ORDER BY id DESC LIMIT $per OFFSET " . (($page - 1) * $per), $params)->fetchAll();
 
 $qs = static fn(array $over = []) => '?' . http_build_query(array_filter(array_merge(
-    ['q' => $qTerm, 'status' => $status, 'source' => $source, 'entered' => $entered, 'per' => $per === 20 ? null : $per, 'page' => $page],
+    ['q' => $qTerm, 'status' => $status, 'source' => $source, 'entered' => $entered, 'per' => $per === 10 ? null : $per, 'page' => $page],
     $over
 ), static fn($v) => $v !== null && $v !== '' && $v !== 1));
 
@@ -229,7 +230,7 @@ render_header('Bookings', ['nav' => 'admin', 'body_class' => 'page-admin']);
       <option value="yes" <?= $entered === 'yes' ? 'selected' : '' ?>>Entered</option>
       <option value="no" <?= $entered === 'no' ? 'selected' : '' ?>>Not entered</option>
     </select>
-    <?php if ($per !== 20): ?><input type="hidden" name="per" value="<?= $per ?>"><?php endif; ?>
+    <?php if ($per !== 10): ?><input type="hidden" name="per" value="<?= $per ?>"><?php endif; ?>
     <button class="btn btn-primary">Filter</button>
   </form>
 
@@ -256,6 +257,6 @@ render_header('Bookings', ['nav' => 'admin', 'body_class' => 'page-admin']);
     <?php endif; ?>
   </div>
 
-  <?php if ($total > 0): ?><?= pager($page, $pages, $total, $per, $qs) ?><?php endif; ?>
+  <?php if ($total > 0): ?><?= pager($page, $pages, $total, $per, $qs, $perOptions) ?><?php endif; ?>
 </main>
 <?php render_footer(['nav' => 'admin']);

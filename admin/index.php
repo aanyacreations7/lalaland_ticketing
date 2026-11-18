@@ -21,7 +21,13 @@ $cashByStaff = q(
       WHERE b.source = 'boxoffice' AND b.status = 'paid'
       GROUP BY b.created_by, u.name ORDER BY cash DESC"
 )->fetchAll();
-$latest = q("SELECT * FROM tk_bookings WHERE status = 'paid' ORDER BY paid_at DESC, id DESC LIMIT 10")->fetchAll();
+// Latest paid bookings, 10 per page (?lp=2 …)
+$latestPer = 10;
+$latestTotal = (int) q_val("SELECT COUNT(*) FROM tk_bookings WHERE status = 'paid'");
+$latestPages = max(1, (int) ceil($latestTotal / $latestPer));
+$latestPage = min(max(1, (int) ($_GET['lp'] ?? 1)), $latestPages);
+$latest = q("SELECT * FROM tk_bookings WHERE status = 'paid' ORDER BY paid_at DESC, id DESC LIMIT $latestPer OFFSET " . (($latestPage - 1) * $latestPer))->fetchAll();
+$latestLink = static fn(array $over = []) => (($p = (int) ($over['page'] ?? $latestPage)) > 1 ? '?lp=' . $p : '?') . '#latest';
 $failures = q(
     "SELECT * FROM tk_bookings WHERE status = 'paid'
         AND (email_status LIKE 'Error%' OR wa_status LIKE 'Error%')
@@ -107,7 +113,7 @@ render_header('Dashboard', ['nav' => 'admin', 'body_class' => 'page-admin']);
   </section>
   <?php endif; ?>
 
-  <section class="card">
+  <section class="card" id="latest">
     <div class="card-head"><h2>Latest bookings</h2><a href="/admin/bookings.php">All bookings →</a></div>
     <?php if (!$latest): ?><p class="muted">No paid bookings yet.</p><?php else: ?>
     <table class="table">
@@ -125,6 +131,7 @@ render_header('Dashboard', ['nav' => 'admin', 'body_class' => 'page-admin']);
       <?php endforeach; ?>
       </tbody>
     </table>
+    <?php if ($latestPages > 1): ?><?= pager($latestPage, $latestPages, $latestTotal, $latestPer, $latestLink, []) ?><?php endif; ?>
     <?php endif; ?>
   </section>
 

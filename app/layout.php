@@ -267,7 +267,7 @@ function main_site_links(string $where): array
 
 /**
  * Pagination bar: "Showing 21–40 of 132", numbered pages with prev/next,
- * and a per-page picker. $link(array $override) returns the URL for a page.
+ * and a per-page picker (pass [] to hide it). $link(array $override) returns the URL for a page.
  */
 function pager(int $page, int $pages, int $total, int $per, callable $link, array $perOptions = [20, 50, 100]): string
 {
@@ -302,11 +302,14 @@ function pager(int $page, int $pages, int $total, int $per, callable $link, arra
         : '<span class="is-disabled" aria-hidden="true">›</span>';
     $h .= '</span>';
 
-    $h .= '<label class="pager-per">Per page <select onchange="location.href=this.value">';
-    foreach ($perOptions as $opt) {
-        $h .= '<option value="' . e($link(['per' => $opt, 'page' => 1])) . '"' . ($opt === $per ? ' selected' : '') . '>' . $opt . '</option>';
+    if ($perOptions) {
+        $h .= '<label class="pager-per">Per page <select onchange="location.href=this.value">';
+        foreach ($perOptions as $opt) {
+            $h .= '<option value="' . e($link(['per' => $opt, 'page' => 1])) . '"' . ($opt === $per ? ' selected' : '') . '>' . $opt . '</option>';
+        }
+        $h .= '</select></label>';
     }
-    $h .= '</select></label></nav>';
+    $h .= '</nav>';
     return $h;
 }
 
