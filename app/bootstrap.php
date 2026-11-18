@@ -48,6 +48,50 @@ if (!is_array($GLOBALS['CONFIG'])) {
     exit("app/config.php must end with: return \$c;  (or return [ ... ];)\n");
 }
 
+// ---- Environment (.env) -------------------------------------------------------
+// Secrets such as Razorpay keys can live in a .env file next to index.php
+// (never committed to git, blocked from the web by .htaccess) or in real
+// environment variables. Real environment variables win over .env.
+(static function (string $file): void {
+    if (!is_file($file) || !is_readable($file)) {
+        return;
+    }
+    foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#' || !str_contains($line, '=')) {
+            continue;
+        }
+        [$key, $value] = array_map('trim', explode('=', $line, 2));
+        if (str_starts_with($key, 'export ')) {
+            $key = trim(substr($key, 7));
+        }
+        if (!preg_match('/^[A-Z_][A-Z0-9_]*$/', $key)) {
+            continue;
+        }
+        if (strlen($value) >= 2 && ($value[0] === '"' || $value[0] === "'") && $value[-1] === $value[0]) {
+            $value = substr($value, 1, -1);
+        }
+        if (getenv($key) === false) {
+            putenv($key . '=' . $value);
+            $_ENV[$key] = $value;
+        }
+    }
+})(ROOT_DIR . '/.env');
+
+/** Environment variable, or $default when unset or empty. */
+function env(string $key, ?string $default = null): ?string
+{
+    $v = getenv($key);
+    return $v === false || $v === '' ? $default : $v;
+}
+
+// Razorpay keys from the environment override app/config.php.
+foreach (['key_id' => 'RAZORPAY_KEY_ID', 'key_secret' => 'RAZORPAY_KEY_SECRET', 'webhook_secret' => 'RAZORPAY_WEBHOOK_SECRET'] as $cfgKey => $envKey) {
+    if (($v = env($envKey)) !== null) {
+        $GLOBALS['CONFIG']['razorpay'][$cfgKey] = $v;
+    }
+}
+
 function config(string $path, mixed $default = null): mixed
 {
     $value = $GLOBALS['CONFIG'];

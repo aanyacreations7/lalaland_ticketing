@@ -111,7 +111,11 @@ try {
     // No order was created, so release the held seats immediately
     // (failed bookings without an order id don't count towards capacity).
     q("UPDATE tk_bookings SET status = 'failed' WHERE id = ?", [$booking['id']]);
-    json_error('Payment service unavailable, please try again.', 503);
+    if ($e->isAuthFailure()) {
+        app_log('error', 'Razorpay rejected the API keys: check RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET in .env', ['ref' => $booking['ref']]);
+        json_error('Online payments are not set up correctly. Please contact the organiser.', 401);
+    }
+    json_error('Payment service unavailable, please try again.', 500);
 }
 
 q('UPDATE tk_bookings SET rzp_order_id = ? WHERE id = ?', [$order['id'], $booking['id']]);

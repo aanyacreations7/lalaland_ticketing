@@ -6,7 +6,14 @@ declare(strict_types=1);
  * Docs: https://razorpay.com/docs/api/orders/ and /docs/webhooks/
  */
 
-final class RazorpayError extends RuntimeException {}
+final class RazorpayError extends RuntimeException
+{
+    /** True when Razorpay rejected our key id / secret (or they're missing). */
+    public function isAuthFailure(): bool
+    {
+        return $this->getCode() === 401;
+    }
+}
 
 /**
  * Create a Razorpay order. Returns the decoded order (id, amount, status...).
@@ -34,7 +41,7 @@ function rzp_request(string $method, string $path, ?array $body = null): array
     $keyId = (string) config('razorpay.key_id');
     $secret = (string) config('razorpay.key_secret');
     if ($keyId === '' || $secret === '' || str_contains($keyId, 'XXXX')) {
-        throw new RazorpayError('Razorpay keys are not configured.');
+        throw new RazorpayError('Razorpay keys are not configured.', 401);
     }
 
     $base = rtrim((string) config('razorpay.api_base', 'https://api.razorpay.com'), '/');
@@ -63,7 +70,7 @@ function rzp_request(string $method, string $path, ?array $body = null): array
     $data = json_decode((string) $raw, true);
     if ($status >= 400 || !is_array($data)) {
         app_log('error', 'Razorpay API error', ['path' => $path, 'status' => $status, 'body' => mb_substr((string) $raw, 0, 500)]);
-        throw new RazorpayError($data['error']['description'] ?? 'Payment service error.');
+        throw new RazorpayError($data['error']['description'] ?? 'Payment service error.', $status === 401 ? 401 : 500);
     }
     return $data;
 }

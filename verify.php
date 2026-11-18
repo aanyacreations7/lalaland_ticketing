@@ -16,6 +16,9 @@ $orderId = (string) ($in['razorpay_order_id'] ?? '');
 $paymentId = (string) ($in['razorpay_payment_id'] ?? '');
 $signature = (string) ($in['razorpay_signature'] ?? '');
 
+if ($orderId === '' || $paymentId === '' || $signature === '') {
+    json_error('Payment details are missing. If money was deducted, your ticket will be sent automatically within a few minutes.', 400);
+}
 if (!rzp_verify_payment_signature($orderId, $paymentId, $signature)) {
     app_log('warning', 'Rejected checkout signature', ['order' => $orderId, 'ip' => client_ip()]);
     json_error('We could not verify this payment. If money was deducted, your ticket will be sent automatically within a few minutes, or contact us.', 400);

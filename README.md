@@ -15,17 +15,17 @@ Plain PHP 8.1+ and MySQL. No framework, no Composer, no build step. Runs on Host
 5. **Config.** In `app/`, copy `config.sample.php` to `config.php` and fill in:
    - `base_url`: `https://tickets.yourwebsite.com` (no trailing slash)
    - `db`: name, user, password from step 3
-   - `razorpay`: your **test** keys for now (Razorpay Dashboard → Account & Settings → API Keys)
+   - Razorpay keys: copy `.env.example` to `.env` (next to `index.php`) and fill in `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` with your **test** keys for now (Razorpay Dashboard → Account & Settings → API Keys). `.env` is never committed and `.htaccess` blocks it from the web. Values in `.env` override `razorpay.*` in `config.php`.
    - leave `mail.enabled` false and `whatsapp.provider` as `none` until those accounts exist
 6. **Install.** Open `https://tickets.yourwebsite.com/install.php`. It checks the server, creates the tables, and asks for your admin username and password. It locks itself afterwards.
 7. **Event.** You land on Admin → Event. Fill in name, date, venue, price and capacity, then switch **Online sales open** on.
-8. **Razorpay webhook (test mode).** Razorpay Dashboard → Webhooks → Add: URL `https://tickets.yourwebsite.com/webhook.php`, events `order.paid` and `payment.failed`, and a secret you invent. Put the same secret in `razorpay.webhook_secret`.
+8. **Razorpay webhook (test mode).** Razorpay Dashboard → Webhooks → Add: URL `https://tickets.yourwebsite.com/webhook.php`, events `order.paid` and `payment.failed`, and a secret you invent. Put the same secret in `RAZORPAY_WEBHOOK_SECRET` in `.env`.
 9. **Test.** Buy a ticket with UPI ID `success@razorpay`. Scan it twice from `/scan.php` on your phone: green, then red.
 10. **Check privacy.** `https://tickets.yourwebsite.com/app/config.php` must show **403 Forbidden**.
 11. **WordPress.** Add a "Buy Tickets" button linking to `https://tickets.yourwebsite.com`.
 
 ### Going live
-After Razorpay KYC approval: generate **live** keys, add the webhook again in **live mode** (it has its own secret), put the live `key_id`, `key_secret` and `webhook_secret` in `config.php`. No code changes. Then buy one real ₹1 ticket (set the price to 1 temporarily), scan it twice, refund it in Razorpay and cancel it in admin.
+After Razorpay KYC approval: generate **live** keys, add the webhook again in **live mode** (it has its own secret), put the live key id, key secret and webhook secret in `.env`. No code changes. Then buy one real ₹1 ticket (set the price to 1 temporarily), scan it twice, refund it in Razorpay and cancel it in admin.
 
 ### Event day
 - Admin → Staff: create a login per gate phone. Staff sign in at `/login.php` and stay signed in for 16 hours.
@@ -87,7 +87,7 @@ cp app/config.sample.php app/config.php
 PHP_CLI_SERVER_WORKERS=8 php -S localhost:8080
 # then open http://localhost:8080/install.php
 ```
-SQLite is for development only. All SQL is portable, and every timestamp comes from PHP in `Asia/Kolkata`. Note that `php -S` ignores `.htaccess`, so `/app` is only blocked on Apache/LiteSpeed. Optional `razorpay.api_base` points the Razorpay client at a mock server for tests.
+SQLite is for development only. All SQL is portable, and every timestamp comes from PHP in `Asia/Kolkata`. Note that `php -S` ignores `.htaccess`, so `/app` and `.env` are only blocked on Apache/LiteSpeed. Optional `razorpay.api_base` points the Razorpay client at a mock server for tests.
 
 ### Bundled libraries (`app/lib/`)
 PHPMailer 6.10.0 (LGPL-2.1), chillerlan/php-qrcode 5.0.5 (MIT), chillerlan/php-settings-container 3.3.0 (MIT). They're loaded by a small PSR-4 autoloader in `app/bootstrap.php`. The scanner uses html5-qrcode 2.3.8 from unpkg.

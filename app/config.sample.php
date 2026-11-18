@@ -21,6 +21,8 @@ return [
         'sqlite_path' => __DIR__ . '/data/dev.sqlite',
     ],
 
+    // Prefer putting these in the .env file (see .env.example): RAZORPAY_KEY_ID,
+    // RAZORPAY_KEY_SECRET and RAZORPAY_WEBHOOK_SECRET there override the values below.
     'razorpay' => [
         'key_id'         => 'rzp_test_XXXXXXXX', // rzp_live_... after KYC
         'key_secret'     => '',
