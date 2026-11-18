@@ -47,15 +47,6 @@ render_header($s['event_name'], [
           <?php if ($mapLink): ?><a class="btn btn-white" href="<?= e($mapLink) ?>" target="_blank" rel="noopener">Directions</a><?php endif; ?>
         </div>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <?php $photo2 = safe_url($s['photo_2_url']); ?>
-        <?php if ($banner): ?><figure class="polaroid p1"><span class="tape"></span><img src="<?= e($banner) ?>" alt="" loading="eager"><figcaption>the city, one weekend</figcaption></figure><?php endif; ?>
-        <?php if ($photo2): ?><figure class="polaroid p2"><span class="tape tape-o"></span><img src="<?= e($photo2) ?>" alt=""><figcaption>good vibes only</figcaption></figure><?php endif; ?>
-        <?php if (!$banner && !$photo2 && ($logo = brand_asset('logo-sticker.webp'))): ?><img class="hero-logo" src="<?= e($logo) ?>" alt=""><?php endif; ?>
-        <?= sticker('charminar', 'st-a') ?>
-        <?= sticker('cat', 'st-b') ?>
-        <?= date_badge($s['event_datetime']) ?>
-      </div>
     </div>
   </section>
   <div class="tapes" aria-hidden="true">
