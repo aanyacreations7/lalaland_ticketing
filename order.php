@@ -9,6 +9,7 @@ require __DIR__ . '/app/bootstrap.php';
 
 require_method('POST');
 require_csrf();
+session_write_close(); // nothing below writes the session; don't block this buyer's other tabs
 
 $in = json_input();
 $s = settings();
@@ -80,17 +81,21 @@ if ($amount < 100) {
     json_error('Ticket price is not set up yet.', 409);
 }
 
-$booking = with_capacity_lock(static function () use ($name, $email, $phone, $extra, $qty, $amount, $source) {
-    $left = tickets_left();
-    if ($qty > $left) {
-        return $left <= 0 ? 'sold_out' : $left;
-    }
-    return create_booking([
-        'name' => $name, 'email' => $email, 'phone' => $phone, 'extra_value' => $extra ?: null,
-        'quantity' => $qty, 'amount_paise' => $amount, 'source' => $source,
-        'payment_method' => 'razorpay', 'status' => 'pending',
-    ]);
-});
+try {
+    $booking = with_capacity_lock(static function () use ($name, $email, $phone, $extra, $qty, $amount, $source) {
+        $left = tickets_left();
+        if ($qty > $left) {
+            return $left <= 0 ? 'sold_out' : $left;
+        }
+        return create_booking([
+            'name' => $name, 'email' => $email, 'phone' => $phone, 'extra_value' => $extra ?: null,
+            'quantity' => $qty, 'amount_paise' => $amount, 'source' => $source,
+            'payment_method' => 'razorpay', 'status' => 'pending',
+        ]);
+    });
+} catch (CapacityBusy) {
+    json_error('Lots of people are booking right now. Please tap Pay again in a few seconds.', 503);
+}
 
 if ($booking === 'sold_out') {
     json_error('Sorry, tickets just sold out.', 409, ['sold_out' => true]);

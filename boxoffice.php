@@ -55,17 +55,23 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
     if (!$errors) {
         $qty = $old['quantity'];
-        $booking = with_capacity_lock(static function () use ($old, $phone, $qty, $price, $user) {
-            if ($qty > tickets_left()) {
-                return null;
-            }
-            return create_booking([
-                'name' => $old['name'], 'email' => $old['email'], 'phone' => $phone,
-                'quantity' => $qty, 'amount_paise' => $price * $qty, 'source' => 'boxoffice',
-                'payment_method' => $old['payment_method'], 'status' => 'paid', 'created_by' => (int) $user['id'],
-            ]);
-        });
-        if ($booking === null) {
+        try {
+            $booking = with_capacity_lock(static function () use ($old, $phone, $qty, $price, $user) {
+                if ($qty > tickets_left()) {
+                    return null;
+                }
+                return create_booking([
+                    'name' => $old['name'], 'email' => $old['email'], 'phone' => $phone,
+                    'quantity' => $qty, 'amount_paise' => $price * $qty, 'source' => 'boxoffice',
+                    'payment_method' => $old['payment_method'], 'status' => 'paid', 'created_by' => (int) $user['id'],
+                ]);
+            });
+        } catch (CapacityBusy) {
+            $booking = false;
+        }
+        if ($booking === false) {
+            $errors[] = 'Very busy right now. Please press Create paid ticket again.';
+        } elseif ($booking === null) {
             $errors[] = 'Not enough tickets left (only ' . tickets_left() . ').';
         } else {
             app_log('info', 'Box office sale', ['ref' => $booking['ref'], 'by' => $user['id'], 'method' => $booking['payment_method']]);

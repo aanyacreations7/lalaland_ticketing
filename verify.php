@@ -9,6 +9,7 @@ require __DIR__ . '/app/bootstrap.php';
 
 require_method('POST');
 require_csrf();
+session_write_close();
 
 $in = json_input();
 $orderId = (string) ($in['razorpay_order_id'] ?? '');

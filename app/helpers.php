@@ -282,9 +282,13 @@ function price_paise(string $source = 'online'): int
     return rupees_to_paise(setting('price_rupees', '0'));
 }
 
+/** Thrown when many buyers are queued for the capacity lock at once. */
+final class CapacityBusy extends RuntimeException {}
+
 /**
  * Serialise capacity check + insert so two buyers can't take the last seat.
  * MySQL: named lock. SQLite: the write lock of an immediate transaction.
+ * @throws CapacityBusy if the lock can't be had within 10 seconds
  */
 function with_capacity_lock(callable $fn): mixed
 {
@@ -300,14 +304,17 @@ function with_capacity_lock(callable $fn): mixed
             throw $e;
         }
     }
-    $got = (int) q_val("SELECT GET_LOCK('tk_capacity', 10)");
+    // MySQL lock names are server-wide; shared hosting runs many customers on
+    // one MySQL server, so include this site's database name.
+    $name = substr('tk_capacity_' . (string) config('db.name'), 0, 64);
+    $got = (int) q_val('SELECT GET_LOCK(?, 10)', [$name]);
     if ($got !== 1) {
-        throw new RuntimeException('Busy, please try again.');
+        throw new CapacityBusy('Busy, please try again.');
     }
     try {
         return $fn();
     } finally {
-        q_val("SELECT RELEASE_LOCK('tk_capacity')");
+        q_val('SELECT RELEASE_LOCK(?)', [$name]);
     }
 }
 
