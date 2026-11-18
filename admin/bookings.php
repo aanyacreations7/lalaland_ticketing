@@ -164,7 +164,7 @@ $status = in_array($_GET['status'] ?? '', BOOKING_STATUSES, true) ? $_GET['statu
 $source = in_array($_GET['source'] ?? '', BOOKING_SOURCES, true) ? $_GET['source'] : '';
 $entered = in_array($_GET['entered'] ?? '', ['yes', 'no'], true) ? $_GET['entered'] : '';
 $page = max(1, (int) ($_GET['page'] ?? 1));
-$per = 50;
+$per = in_array((int) ($_GET['per'] ?? 0), [20, 50, 100], true) ? (int) $_GET['per'] : 20;
 
 $where = [];
 $params = [];
@@ -202,7 +202,7 @@ $page = min($page, $pages);
 $rows = q("SELECT * FROM tk_bookings $whereSql ORDER BY id DESC LIMIT $per OFFSET " . (($page - 1) * $per), $params)->fetchAll();
 
 $qs = static fn(array $over = []) => '?' . http_build_query(array_filter(array_merge(
-    ['q' => $qTerm, 'status' => $status, 'source' => $source, 'entered' => $entered, 'page' => $page],
+    ['q' => $qTerm, 'status' => $status, 'source' => $source, 'entered' => $entered, 'per' => $per === 20 ? null : $per, 'page' => $page],
     $over
 ), static fn($v) => $v !== null && $v !== '' && $v !== 1));
 
@@ -229,6 +229,7 @@ render_header('Bookings', ['nav' => 'admin', 'body_class' => 'page-admin']);
       <option value="yes" <?= $entered === 'yes' ? 'selected' : '' ?>>Entered</option>
       <option value="no" <?= $entered === 'no' ? 'selected' : '' ?>>Not entered</option>
     </select>
+    <?php if ($per !== 20): ?><input type="hidden" name="per" value="<?= $per ?>"><?php endif; ?>
     <button class="btn btn-primary">Filter</button>
   </form>
 
@@ -255,12 +256,6 @@ render_header('Bookings', ['nav' => 'admin', 'body_class' => 'page-admin']);
     <?php endif; ?>
   </div>
 
-  <?php if ($pages > 1): ?>
-  <nav class="pager">
-    <?php if ($page > 1): ?><a class="btn" href="<?= e($qs(['page' => $page - 1])) ?>">← Newer</a><?php endif; ?>
-    <span class="muted">Page <?= $page ?> of <?= $pages ?></span>
-    <?php if ($page < $pages): ?><a class="btn" href="<?= e($qs(['page' => $page + 1])) ?>">Older →</a><?php endif; ?>
-  </nav>
-  <?php endif; ?>
+  <?php if ($total > 0): ?><?= pager($page, $pages, $total, $per, $qs) ?><?php endif; ?>
 </main>
 <?php render_footer(['nav' => 'admin']);

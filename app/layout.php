@@ -213,3 +213,48 @@ function main_site_links(string $where): array
     $links[] = ['Facebook', 'https://www.facebook.com/share/1GSThWzuDL/'];
     return $links;
 }
+
+/**
+ * Pagination bar: "Showing 21–40 of 132", numbered pages with prev/next,
+ * and a per-page picker. $link(array $override) returns the URL for a page.
+ */
+function pager(int $page, int $pages, int $total, int $per, callable $link, array $perOptions = [20, 50, 100]): string
+{
+    $from = $total ? ($page - 1) * $per + 1 : 0;
+    $to = min($total, $page * $per);
+    $h = '<nav class="pager" aria-label="Pages">';
+    $h .= '<span class="pager-info">Showing ' . indian_number($from) . '–' . indian_number($to) . ' of ' . indian_number($total) . '</span>';
+
+    $h .= '<span class="pager-pages">';
+    $h .= $page > 1
+        ? '<a href="' . e($link(['page' => $page - 1])) . '" rel="prev" aria-label="Previous page">‹</a>'
+        : '<span class="is-disabled" aria-hidden="true">‹</span>';
+    $shown = [];
+    foreach ([1, $pages, $page - 2, $page - 1, $page, $page + 1, $page + 2] as $n) {
+        if ($n >= 1 && $n <= $pages) {
+            $shown[$n] = true;
+        }
+    }
+    ksort($shown);
+    $prev = 0;
+    foreach (array_keys($shown) as $n) {
+        if ($prev && $n > $prev + 1) {
+            $h .= '<span class="gap">…</span>';
+        }
+        $h .= $n === $page
+            ? '<span class="is-current" aria-current="page">' . $n . '</span>'
+            : '<a href="' . e($link(['page' => $n])) . '">' . $n . '</a>';
+        $prev = $n;
+    }
+    $h .= $page < $pages
+        ? '<a href="' . e($link(['page' => $page + 1])) . '" rel="next" aria-label="Next page">›</a>'
+        : '<span class="is-disabled" aria-hidden="true">›</span>';
+    $h .= '</span>';
+
+    $h .= '<label class="pager-per">Per page <select onchange="location.href=this.value">';
+    foreach ($perOptions as $opt) {
+        $h .= '<option value="' . e($link(['per' => $opt, 'page' => 1])) . '"' . ($opt === $per ? ' selected' : '') . '>' . $opt . '</option>';
+    }
+    $h .= '</select></label></nav>';
+    return $h;
+}

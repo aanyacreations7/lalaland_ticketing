@@ -220,7 +220,6 @@ input[type="color"] { padding: 4px; width: 72px; }
 .actions form .btn { width: 100%; }
 .row-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .quick { display: flex; gap: 8px; flex-wrap: wrap; }
-.pager { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 12px; }
 .staff-list { list-style: none; padding: 0; margin: 0; }
 .staff-list li { display: flex; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .staff-list li:last-child { border-bottom: 0; }
@@ -310,7 +309,7 @@ a { color: inherit; }
 .btn-primary:disabled { background: #e6d9b5; }
 .btn-block { width: 100%; min-height: 60px; font-size: 1.15rem; }
 .btn-danger { color: var(--bad); }
-.pill { display: inline-flex; align-items: center; background: var(--ink); color: var(--sun); border-radius: 999px; padding: 12px 22px; font: 400 .95rem/1 var(--display); text-transform: uppercase; text-decoration: none; letter-spacing: .3px; }
+.site-nav .pill { display: inline-flex; align-items: center; background: var(--ink); color: var(--sun); border-radius: 999px; padding: 12px 22px; font: 400 .95rem/1 var(--display); text-transform: uppercase; text-decoration: none; letter-spacing: .3px; }
 .pill-tag { display: inline-block; background: var(--peri); color: var(--ink); border: 3px solid var(--ink); border-radius: 999px; padding: 10px 18px 9px;
   font: 400 .92rem/1 var(--display); text-transform: uppercase; letter-spacing: 1px; transform: rotate(-4deg); box-shadow: 4px 4px 0 var(--ink); margin: 0 0 22px; }
 .chips { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -487,3 +486,16 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--ink); }
 .page-scan .btn-primary { background: var(--ok); color: #fff; font-family: var(--body); font-weight: 700; text-transform: none; }
 
 @media (prefers-reduced-motion: reduce) { .sticker, .badge svg, .tape-row div { animation: none !important; } }
+
+/* ---------- Pagination (admin lists) ---------- */
+.pager { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 20px; margin: 16px 0 8px; }
+.pager-info { font-weight: 700; font-size: .92rem; }
+.pager-pages { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.pager-pages a, .pager-pages span { display: inline-grid; place-items: center; min-width: 40px; height: 40px; padding: 0 10px; border: 2px solid var(--ink); border-radius: 10px; background: var(--white); color: var(--ink); font-weight: 800; font-size: .9rem; text-decoration: none; }
+.pager-pages a:hover { background: var(--sun); }
+.pager-pages .is-current { background: var(--ink); color: var(--sun); }
+.pager-pages .is-disabled { opacity: .35; }
+.pager-pages .gap { border: 0; background: none; min-width: 20px; padding: 0; }
+.pager-per { display: flex; align-items: center; gap: 8px; font-size: .9rem; font-weight: 700; }
+.pager-per select { width: auto; min-height: 40px; padding: 6px 30px 6px 10px; border-width: 2px; border-radius: 10px; }
+.table-scroll .table th, .table-scroll .table td { white-space: nowrap; }
